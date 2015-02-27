@@ -163,6 +163,8 @@
         };
         
         var doAfterSuccess = function(form, data, submitbtn){
+            $(submitbtn).button('reset');
+            
             if($(form).attr('data-form-reset') === 'y'){
                 resetForm(form);
             }
