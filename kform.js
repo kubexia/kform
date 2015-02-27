@@ -151,8 +151,14 @@
         var appendTo = function(form,data){
             var items = data.response.append_to;
             
-            $.each(items, function (item, message) {
-                $('body').find(item).html(message);
+            $.each(items, function (item, value) {
+                var el = $(document).find(item);
+                if(el.is('input')){
+                    el.attr('value',value);
+                }
+                else{
+                    el.html(value);
+                }
             });
         };
         
