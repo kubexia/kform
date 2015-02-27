@@ -2,10 +2,6 @@
     $.fn.kform = function(config) {
         var handler = this.selector;
         
-        if(!$(handler).is('*')){
-            return false;
-        }
-        
         if(config !== undefined && typeof config.onInit === 'function'){
             config.onInit(handler);
         }
@@ -76,19 +72,7 @@
                             }
                         });
                         
-                        if($(form).find('input.captcha-field')){
-                            $(form).find('input.captcha-field').val('');
-                            refreshCaptcha($("a.captcha-refresh"));
-                        
-                        }
-                        
-                        $(submitbtn).button('reset');
-                        cb($(form).attr('data-callback-error'),form,data);
-                        
-                        if(data.message){
-                            messageNotification(form,data,submitbtn);
-                            $(submitbtn).button('reset');
-                        }
+                        doAfterError(form,data,submitbtn);
                         
                     }
                     else{
@@ -164,18 +148,6 @@
             });
         }
         
-        var refreshCaptcha = function(object){
-            var refreshObject = $(object);
-            $(refreshObject).find('i').addClass('fa-spin');
-            var currentTime = new Date();
-            var time = currentTime.getMilliseconds();
-            
-            setTimeout(function() {
-                $("img.captcha-img").attr('src',$("img.captcha-img").attr('src')+'?time='+time);
-                $(refreshObject).find('i').removeClass('fa-spin');
-            }, 300);
-        };
-        
         var appendTo = function(form,data){
             var items = data.response.append_to;
             
@@ -220,6 +192,32 @@
             }
             
             return true;
+        };
+        
+        var doAfterError = function(form,data,submitbtn){
+            $(submitbtn).button('reset');
+            cb($(form).attr('data-callback-error'),form,data);
+            
+            if(data.message){
+                messageNotification(form,data,submitbtn);
+                $(submitbtn).button('reset');
+            }
+            
+            if(data.response.redirect_to !== undefined){
+                window.location.href = data.response.redirect_to;
+                return false;
+            }
+            
+            if(data.response.append_to !== undefined){
+                appendTo(form,data);
+            }
+            
+            if(config !== undefined && typeof config.onError === 'function'){
+                $(submitbtn).button('reset');
+                return config.onError(form,data);
+            }
+            
+            return false;
         };
         
         function resetForm($form) {
