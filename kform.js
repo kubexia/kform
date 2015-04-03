@@ -40,35 +40,13 @@
                 success: function(data){
                     if(data.success === false){
                         $.each(data.errors,function(field,item){
-                            var formgroup = $(form).find('.form-group.'+field);
-                            if($(formgroup).is('*')){
-                                var inputgroup = $(formgroup).find('.input-group');
-                                
-                                $(formgroup).addClass('has-error');
-                                
-                                var customMsg = $(formgroup).find('.kform-custom-message');
-                                if($(customMsg).is('*')){
-                                    $(customMsg).append('<p class="text-danger error-message">'+item.message+'</p>');
-                                }
-                                else{
-                                    if($(inputgroup).is('*')){
-                                        $(inputgroup).after('<p class="text-danger error-message">'+item.message+'</p>');
-                                    }
-                                    else{
-                                        if($(formgroup).find('.form-control').is('*')){
-                                            $($(formgroup).find('.form-control')).after('<p class="text-danger error-message">'+item.message+'</p>');
-                                        }
-                                        else{
-                                            $(formgroup).append('<p class="text-danger error-message">'+item.message+'</p>');
-                                        }
-                                    }
-                                }
+                            if(item.message === undefined && item.code === undefined){
+                                $.each(item,function(k,it){
+                                    addError(form,field,it);
+                                });
                             }
                             else{
-                                var customDiv = $(form).find('.kform-custom-message.'+field);
-                                if($(customDiv).is('*')){
-                                    $(customDiv).append('<p class="text-danger error-message">'+item.message+'</p>');
-                                }
+                                addError(form,field,item);
                             }
                         });
                         
@@ -99,6 +77,39 @@
             }
             
             return false;
+        };
+        
+        var addError = function(form,field,item){
+            var formgroup = $(form).find('.form-group.'+field);
+            if($(formgroup).is('*')){
+                var inputgroup = $(formgroup).find('.input-group');
+
+                $(formgroup).addClass('has-error');
+
+                var customMsg = $(formgroup).find('.kform-custom-message');
+                if($(customMsg).is('*')){
+                    $(customMsg).append('<p class="text-danger error-message">'+item.message+'</p>');
+                }
+                else{
+                    if($(inputgroup).is('*')){
+                        $(inputgroup).after('<p class="text-danger error-message">'+item.message+'</p>');
+                    }
+                    else{
+                        if($(formgroup).find('.form-control').is('*')){
+                            $($(formgroup).find('.form-control')).after('<p class="text-danger error-message">'+item.message+'</p>');
+                        }
+                        else{
+                            $(formgroup).append('<p class="text-danger error-message">'+item.message+'</p>');
+                        }
+                    }
+                }
+            }
+            else{
+                var customDiv = $(form).find('.kform-custom-message.'+field);
+                if($(customDiv).is('*')){
+                    $(customDiv).append('<p class="text-danger error-message">'+item.message+'</p>');
+                }
+            }
         };
         
         var messageNotification = function(form,data,submitbtn){
